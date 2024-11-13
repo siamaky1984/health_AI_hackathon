@@ -242,7 +242,7 @@ def build_sleep_predictor(samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, 
 
 if __name__ == "__main__":
 
-    dataset_source = "./ifh_affect"
+    dataset_source = "./ifh_affect_short"
     par_ID ='par_1'
     file_path_samsung = os.path.join(dataset_source, 'par_1/samsung')
     file_path_oura = os.path.join(dataset_source, 'par_1/oura')
