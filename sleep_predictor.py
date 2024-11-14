@@ -3,6 +3,8 @@ import sys
 
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
@@ -14,7 +16,7 @@ class SleepQualityPredictor:
         self.model = None
         self.scaler = StandardScaler()
         
-    def preprocess_samsung_data(self, awake_times, hrv_data, imu_data, ppg_data, pedometer_data):
+    def preprocess_samsung_data(self, awake_times, hrv_data, imu, ppg, pedometer_data):
         """Preprocess Samsung sensor data"""
         # Process awake times
         awake_df = pd.DataFrame()
@@ -159,7 +161,7 @@ class SleepQualityPredictor:
             'sleep_pressure', 'rolling_activity_load'
         ]
         
-        print(combined_features.keys())
+        print('combined features', combined_features.keys())
         # Remove rows with NaN values
         features = combined_features[feature_columns].copy()
         valid_idx = ~target.isna() & ~features.isna().any(axis=1)
@@ -170,7 +172,7 @@ class SleepQualityPredictor:
         return X, y
     
     def train_model(self, X, y):
-        """Train the sleep quality prediction model"""
+        """Train the sleep quality prediction model with enhanced result tracking"""
         # Split data into training and testing sets
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
@@ -182,8 +184,10 @@ class SleepQualityPredictor:
         self.model = RandomForestRegressor(n_estimators=100, random_state=42)
         self.model.fit(X_train_scaled, y_train)
         
-        # Evaluate model
+        # Generate predictions
         y_pred = self.model.predict(X_test_scaled)
+        
+        # Calculate metrics
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         
@@ -193,10 +197,16 @@ class SleepQualityPredictor:
             'importance': self.model.feature_importances_
         }).sort_values('importance', ascending=False)
         
+        # Store test and prediction data for visualization
+        self.y_test = y_test
+        self.y_pred = y_pred
+        
         return {
             'mse': mse,
             'r2': r2,
-            'feature_importance': feature_importance
+            'feature_importance': feature_importance,
+            'y_test': y_test,
+            'y_pred': y_pred
         }
     
     def predict_sleep_quality(self, current_day_features):
@@ -214,10 +224,202 @@ class SleepQualityPredictor:
     
 
 
+class SleepQualityVisualizer:
+    @staticmethod
+    def plot_sleep_patterns(combined_features):
+        """Visualize sleep patterns and quality over time"""
+        plt.figure(figsize=(15, 10))
+        
+        # Plot 1: Sleep Score Timeline
+        plt.subplot(2, 1, 1)
+        plt.plot(combined_features['date'], combined_features['score_sleep'], 
+                marker='o', linestyle='-', label='Sleep Score')
+        plt.fill_between(combined_features['date'], 
+                        combined_features['score_sleep'] - combined_features['score_sleep'].std(),
+                        combined_features['score_sleep'] + combined_features['score_sleep'].std(),
+                        alpha=0.2)
+        plt.title('Sleep Score Over Time')
+        plt.ylabel('Sleep Score')
+        plt.xticks(rotation=45)
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        
+        # Plot 2: Sleep Components
+        plt.subplot(2, 1, 2)
+        plt.stackplot(combined_features['date'],
+                     combined_features['deep'] / 60,  # Convert to hours
+                     combined_features['rem'] / 60,
+                    #  combined_features['light'] / 60,
+                     labels=['Deep Sleep', 'REM Sleep', 'Light Sleep'])
+        plt.title('Sleep Stage Distribution')
+        plt.ylabel('Hours')
+        plt.xticks(rotation=45)
+        plt.grid(True, alpha=0.3)
+        plt.legend()
+        
+        plt.tight_layout()
+        plt.show()
+    
+    @staticmethod
+    def plot_activity_patterns(combined_features):
+        """Visualize daily activity patterns"""
+        plt.figure(figsize=(15, 12))
+        
+        # Plot 1: Daily Steps and Activity Score
+        ax1 = plt.subplot(3, 1, 1)
+        ax1.plot(combined_features['date'], combined_features['steps'], 
+                color='blue', label='Steps')
+        ax1.set_ylabel('Steps', color='blue')
+        ax1.tick_params(axis='y', labelcolor='blue')
+        
+        ax2 = ax1.twinx()
+        ax2.plot(combined_features['date'], combined_features['score_activity'],
+                color='red', label='Activity Score')
+        ax2.set_ylabel('Activity Score', color='red')
+        ax2.tick_params(axis='y', labelcolor='red')
+        
+        plt.title('Daily Steps and Activity Score')
+        plt.xticks(rotation=45)
+        
+        # Plot 2: Activity Distribution
+        plt.subplot(3, 1, 2)
+        activity_data = pd.melt(combined_features[['date', 'inactive', 'low', 'medium', 'high']], 
+                               id_vars=['date'])
+        sns.boxplot(x='variable', y='value', data=activity_data)
+        plt.title('Distribution of Activity Levels')
+        plt.ylabel('Minutes')
+        
+        # Plot 3: Movement Intensity Timeline
+        plt.subplot(3, 1, 3)
+        plt.stackplot(combined_features['date'],
+                     combined_features['inactive'],
+                     combined_features['low'],
+                     combined_features['medium'],
+                     combined_features['high'],
+                     labels=['Inactive', 'Low', 'Medium', 'High'])
+        plt.title('Daily Activity Composition')
+        plt.ylabel('Minutes')
+        plt.xticks(rotation=45)
+        plt.legend()
+        
+        plt.tight_layout()
+        plt.show()
+    
+    @staticmethod
+    def plot_physiological_metrics(combined_features):
+        """Visualize physiological metrics"""
+        plt.figure(figsize=(15, 12))
+        
+        # Plot 1: Heart Rate Metrics
+        plt.subplot(3, 1, 1)
+        plt.plot(combined_features['date'], combined_features['hr_mean'], 
+                label='Average HR', color='red')
+        plt.fill_between(combined_features['date'],
+                        combined_features['hr_min'],
+                        combined_features['hr_max'],
+                        alpha=0.2, color='red')
+        plt.title('Heart Rate Range')
+        plt.ylabel('BPM')
+        plt.xticks(rotation=45)
+        plt.legend()
+        
+        # Plot 2: HRV Metrics
+        plt.subplot(3, 1, 2)
+        plt.plot(combined_features['date'], combined_features['hrv_sdnn_mean'],
+                label='SDNN', color='blue')
+        plt.plot(combined_features['date'], combined_features['hrv_rmssd_mean'],
+                label='RMSSD', color='green')
+        plt.title('Heart Rate Variability Metrics')
+        plt.ylabel('ms')
+        plt.xticks(rotation=45)
+        plt.legend()
+        
+        # Plot 3: Temperature and Movement
+        plt.subplot(3, 1, 3)
+        plt.plot(combined_features['date'], combined_features['temperature_delta'],
+                label='Temperature Deviation', color='purple')
+        plt.title('Temperature Deviation from Baseline')
+        plt.ylabel('°C')
+        plt.xticks(rotation=45)
+        plt.legend()
+        
+        plt.tight_layout()
+        plt.show()
+    
+    @staticmethod
+    def plot_prediction_analysis(y_test, y_pred, feature_importance):
+        """Visualize model predictions and feature importance"""
+        plt.figure(figsize=(15, 10))
+        
+        # Plot 1: Predicted vs Actual
+        plt.subplot(2, 1, 1)
+        plt.scatter(y_test, y_pred, alpha=0.5)
+        plt.plot([y_test.min(), y_test.max()],
+                [y_test.min(), y_test.max()],
+                'r--', label='Perfect Prediction')
+        plt.title('Predicted vs Actual Sleep Scores')
+        plt.xlabel('Actual Sleep Score')
+        plt.ylabel('Predicted Sleep Score')
+        plt.legend()
+        
+        # Plot 2: Feature Importance
+        plt.subplot(2, 1, 2)
+        top_features = feature_importance.head(10)
+        sns.barplot(x='importance', y='feature', data=top_features)
+        plt.title('Top 10 Most Important Features')
+        plt.xlabel('Feature Importance')
+        
+        plt.tight_layout()
+        plt.show()
+    
+    @staticmethod
+    def plot_correlation_matrix(combined_features):
+        """Visualize feature correlations"""
+        # Select relevant numerical columns
+        numeric_cols = combined_features.select_dtypes(include=[np.number]).columns
+        correlation_matrix = combined_features[numeric_cols].corr()
+        
+        plt.figure(figsize=(12, 10))
+        sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', center=0,
+                   fmt='.2f', square=True)
+        plt.title('Feature Correlation Matrix')
+        plt.tight_layout()
+        plt.show()
+
+# Add visualization methods to the original SleepQualityPredictor class
+class EnhancedSleepQualityPredictor(SleepQualityPredictor):
+    def visualize_data(self, combined_features, results):
+        """Generate comprehensive visualizations"""
+        visualizer = SleepQualityVisualizer()
+        
+        print("Plotting sleep patterns...")
+        visualizer.plot_sleep_patterns(combined_features)
+        
+        print("Plotting activity patterns...")
+        visualizer.plot_activity_patterns(combined_features)
+        
+        print("Plotting physiological metrics...")
+        visualizer.plot_physiological_metrics(combined_features)
+        
+        print("Plotting prediction analysis...")
+        # visualizer.plot_prediction_analysis(results)
+        visualizer.plot_prediction_analysis(
+            results['y_test'],
+            results['y_pred'],
+            results['feature_importance']
+        )
+        
+        print("Plotting correlation matrix...")
+        visualizer.plot_correlation_matrix(combined_features)
+
+
+
 def build_sleep_predictor(samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, samsung_pedometer,
                          oura_sleep, oura_activity, oura_readiness, oura_heart_rate):
     """Main function to build and train the sleep predictor"""
-    predictor = SleepQualityPredictor()
+    # predictor = SleepQualityPredictor()
+
+    predictor = EnhancedSleepQualityPredictor()
     
     # Preprocess data
     samsung_features = predictor.preprocess_samsung_data(
@@ -236,13 +438,19 @@ def build_sleep_predictor(samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, 
     
     # Train and evaluate model
     results = predictor.train_model(X, y)
+
+
+    # Generate visualizations
+    print("Generating visualizations...")
+    predictor.visualize_data(combined_features, results)
     
-    return predictor, results
+    
+    return predictor, results, combined_features
 
 
 if __name__ == "__main__":
 
-    dataset_source = "./ifh_affect_short"
+    dataset_source = "./ifh_affect"
     par_ID ='par_1'
     file_path_samsung = os.path.join(dataset_source, 'par_1/samsung')
     file_path_oura = os.path.join(dataset_source, 'par_1/oura')
@@ -250,8 +458,8 @@ if __name__ == "__main__":
     awake_file = os.path.join(file_path_samsung, 'awake_times.csv')
     hrv_file = os.path.join(file_path_samsung, 'hrv_1min.csv')
 
-    imu_file = os.path.join(file_path_samsung, 'samsung_imu_short.csv')
-    ppg_file = os.path.join(file_path_samsung, 'samsung_ppg_short.csv')
+    # imu_file = os.path.join(file_path_samsung, 'imu.csv')
+    # ppg_file = os.path.join(file_path_samsung, 'ppg.csv')
 
     pressure_file = os.path.join(file_path_samsung, 'pressure.csv')
     
@@ -262,8 +470,6 @@ if __name__ == "__main__":
     oura_activity_file = os.path.join(file_path_oura, 'activity.csv')
     oura_readiness_file = os.path.join(file_path_oura, 'readiness.csv')
     oura_heart_rate_file = os.path.join(file_path_oura, 'heart_rate.csv')
-
-
 
 
 
@@ -283,8 +489,13 @@ if __name__ == "__main__":
 
     samsung_awake_data = pd.read_csv(awake_file)
     samsung_hrv_data = pd.read_csv(hrv_file)
-    samsung_imu_data = pd.read_csv(imu_file)
-    samsung_ppg_data = pd.read_csv(ppg_file)
+    # samsung_imu_data = pd.read_csv(imu_file)
+    # samsung_ppg_data = pd.read_csv(ppg_file)
+
+    samsung_imu_data = []
+    samsung_ppg_data = []
+
+
     samsung_pedometer_data = pd.read_csv(pedometer_file)
 
     oura_activity_data = pd.read_csv(oura_activity_file)
@@ -294,7 +505,7 @@ if __name__ == "__main__":
 
 
     # Load your data
-    predictor, results = build_sleep_predictor(
+    predictor, results, combined_features = build_sleep_predictor(
         samsung_awake_data,
         samsung_hrv_data,
         samsung_imu_data,
@@ -318,4 +529,4 @@ if __name__ == "__main__":
     file_path_samsung_test = os.path.join(dataset_source, 'samsung')
     file_path_oura_test = os.path.join(dataset_source, 'par_1/oura')
 
-    tomorrow_sleep_score = predictor.predict_sleep_quality(current_day_features)
+    # tomorrow_sleep_score = predictor.predict_sleep_quality(current_day_features)

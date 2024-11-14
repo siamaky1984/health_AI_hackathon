@@ -432,7 +432,7 @@ def analyze_all_sensor_data( file_path):
 
 
 if __name__ == "__main__":
-    dataset_source = "./ifh_affect"
+    dataset_source = "./ifh_affect_short"
     samsung_path = os.path.join(dataset_source, 'par_1/samsung')
     summary = analyze_all_sensor_data(samsung_path)
 
