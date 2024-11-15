@@ -15,7 +15,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(current_dir) ) )))
 sys.path.append(project_root+'/health_AI_hackathon/')
 print('>>>', sys.path)
-from sleep_predictor import *  #sleepQualityPredictor, build_sleep_predictor
+from sleep_score_predict import *  #sleepQualityPredictor, build_sleep_predictor
 
 class SleepScoreGet(Affect):
     """
