@@ -3,6 +3,23 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
 
+import os 
+import sys
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+import datetime
+
+
+
+
+
 class NIMConnector:
     def __init__(self, predictor):
         self.predictor = predictor
@@ -517,3 +534,89 @@ def build_sleep_predictor(df_list):
     
     
     return predictor, results, combined_features
+    
+
+
+if __name__ == "__main__":
+
+    dataset_source = "./ifh_affect"
+    par_ID ='par_1'
+    file_path_samsung = os.path.join(dataset_source, 'par_1/samsung')
+    file_path_oura = os.path.join(dataset_source, 'par_1/oura')
+
+    awake_file = os.path.join(file_path_samsung, 'awake_times.csv')
+    hrv_file = os.path.join(file_path_samsung, 'hrv_1min.csv')
+
+    # imu_file = os.path.join(file_path_samsung, 'imu.csv')
+    # ppg_file = os.path.join(file_path_samsung, 'ppg.csv')
+
+    pressure_file = os.path.join(file_path_samsung, 'pressure.csv')
+    pedometer_file = os.path.join(file_path_samsung, 'pedometer.csv')
+
+
+    oura_sleep_file = os.path.join(file_path_oura, 'sleep.csv')
+    oura_activity_file = os.path.join(file_path_oura, 'activity.csv')
+    oura_readiness_file = os.path.join(file_path_oura, 'readiness.csv')
+    oura_heart_rate_file = os.path.join(file_path_oura, 'heart_rate.csv')
+
+
+
+    # awake_file = os.path.join(file_path_samsung, 'samsung_awake_times_short.csv')
+    # hrv_file = os.path.join(file_path_samsung, 'samsung_hrv_1min_short.csv')
+    # imu_file = os.path.join(file_path_samsung, 'samsung_imu_short.csv')
+    # pressure_file = os.path.join(file_path_samsung, 'samsung_pressure_short.csv')
+    # ppg_file = os.path.join(file_path_samsung, 'samsung_ppg_short.csv')
+    # pedometer_file = os.path.join(file_path_samsung, 'samsung_pedometer_short.csv')
+
+    # oura_sleep_file = os.path.join(file_path_oura, 'oura_sleep_short.csv')
+    # oura_activity_file = os.path.join(file_path_oura, 'oura_activity_short.csv')
+    # oura_readiness_file = os.path.join(file_path_oura, 'oura_readiness_short.csv')
+    # oura_heart_rate_file = os.path.join(file_path_oura, 'oura_heart_rate_short.csv')
+
+
+
+    samsung_awake_data = pd.read_csv(awake_file)
+    samsung_hrv_data = pd.read_csv(hrv_file)
+    # samsung_imu_data = pd.read_csv(imu_file)
+    # samsung_ppg_data = pd.read_csv(ppg_file)
+
+    samsung_imu_data = []
+    samsung_ppg_data = []
+    samsung_pedometer_data = pd.read_csv(pedometer_file)
+
+    oura_activity_data = pd.read_csv(oura_activity_file)
+    oura_readiness_data = pd.read_csv(oura_readiness_file)
+    oura_heart_rate_data = pd.read_csv(oura_heart_rate_file)
+    oura_sleep_data = pd.read_csv(oura_sleep_file)
+
+
+    df_list = [samsung_awake_data,
+        samsung_hrv_data,
+        # samsung_imu_data,
+        # samsung_ppg_data,
+        samsung_pedometer_data,
+        oura_sleep_data,
+        oura_activity_data,
+        oura_readiness_data,
+        oura_heart_rate_data]
+
+    # Load your data
+    predictor, results, combined_features = build_sleep_predictor(
+        df_list
+    )
+
+    # Check model performance
+    print(f"Model R² Score: {results['r2']}")
+    print("\nMost important features:")
+    print(results['feature_importance'])
+
+    # Make predictions for new data
+    ### select a test data for example another participant
+    test_par = 'par_25'
+
+    file_path_samsung_test = os.path.join(dataset_source, 'samsung')
+    file_path_oura_test = os.path.join(dataset_source, 'par_1/oura')
+
+    # tomorrow_sleep_score = predictor.predict_sleep_quality(current_day_features)
+
+
