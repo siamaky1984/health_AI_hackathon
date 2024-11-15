@@ -40,8 +40,11 @@ class WebDataCollector:
         except Exception as e:
             st.error(f"Error fetching health news: {e}")
 
-def build_sleep_predictor(awake_times, hrv_data, imu_data, ppg_data, pedometer_data,
-                         sleep_data, activity_data, readiness_data, heart_rate_data):
+def build_sleep_predictor(df_sleep):
+
+    awake_times, hrv_data, imu_data, ppg_data, pedometer_data,\
+    sleep_data, activity_data, readiness_data, heart_rate_data = df_sleep
+    
     class SimplePredictor:
         def predict(self, samsung_data, oura_data):
             return 75  # Placeholder prediction

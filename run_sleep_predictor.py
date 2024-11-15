@@ -43,10 +43,8 @@ def main():
             'readiness_data': [],
             'heart_rate_data': []
         }
-        
-        # Initialize predictor and connectors
-        predictor, results, combined_features = build_sleep_predictor(
-            samsung_data['awake_times'],
+
+        df_sleep = [samsung_data['awake_times'],
             samsung_data['hrv_data'],
             samsung_data['imu_data'],
             samsung_data['ppg_data'],
@@ -54,7 +52,11 @@ def main():
             oura_data['sleep_data'],
             oura_data['activity_data'],
             oura_data['readiness_data'],
-            oura_data['heart_rate_data']
+            oura_data['heart_rate_data'] ]   
+             
+        # Initialize predictor and connectors
+        predictor, results, combined_features = build_sleep_predictor(
+            df_sleep
         )
         
         nim_connector = NIMConnector(predictor)
