@@ -5,6 +5,8 @@ We use python 3.12.
 
 It's good to use conda. Once a new environemnt is created install the requirements.
 
+pip3 install -r requirements.txt
+
 We try to predict the sleep score of a participant in a given day based on his user activity. 
 You should put the dataset inside the main folder and then run sleep_score_get.py.
 
