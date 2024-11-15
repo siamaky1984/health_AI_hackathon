@@ -1,0 +1,56 @@
+name: sleep_predictor
+version: 1.0.0
+description: Sleep quality prediction and analysis agent
+endpoints:
+  predict:
+    description: Predict sleep quality
+    input:
+      samsung_data:
+        type: object
+        description: Samsung Health sensor data
+      oura_data:
+        type: object
+        description: Oura Ring sensor data
+    output:
+      prediction:
+        type: number
+        description: Sleep quality prediction score
+      recommendations:
+        type: array
+        description: List of sleep recommendations
+      web_recommendations:
+        type: array
+        description: List of web-sourced recommendations
+  
+  visualize:
+    description: Generate sleep visualizations
+    input:
+      viz_type:
+        type: string
+        enum: [sleep_patterns, sleep_stages]
+        description: Type of visualization to generate
+    output:
+      visualization:
+        type: object
+        description: Plotly visualization data
+      type:
+        type: string
+        description: Visualization type
+  
+  web_recommendations:
+    description: Get web-sourced sleep recommendations
+    input:
+      sources:
+        type: array
+        items:
+          type: string
+        description: List of sources to include
+      categories:
+        type: array
+        items:
+          type: string
+        description: List of categories to include
+    output:
+      recommendations:
+        type: array
+        description: List of filtered recommendations
