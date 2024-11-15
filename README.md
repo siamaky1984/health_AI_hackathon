@@ -11,7 +11,8 @@ We try to predict the sleep score of a participant in a given day based on his u
 You should put the dataset inside the main folder and then run sleep_score_get.py.
 
 To see openCHA you can run the test_cha.py and in the task list select affect_sleep_score_get.
-This will then show the sleeping score and activity on the GRADIO GUI.
+This will then show the sleeping score and activity on the GRADIO GUI. You can ask questions about r2 score and mse from the Gradio chatbot.
+It will load the sleep_score_get function to run a random forest and predict the sleeping quality of the following night.
 
 The visualizer also is available by running the following:
 
