@@ -19,6 +19,5 @@ streamlit run sleep_predictor.py
 
 This will use a sample data in this repo to show some stats.
 
-We use python 3.10 for this.
 
 
