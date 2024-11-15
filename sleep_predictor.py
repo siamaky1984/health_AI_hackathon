@@ -20,8 +20,8 @@ app = FastAPI()
 
 
 #  global paths
-OURA_PATH = "/Users/samanehmovassaghi/health_AI_hackathon/ifh_affect_short/par_1/oura"
-SAMSUNG_PATH = "/Users/samanehmovassaghi/health_AI_hackathon/ifh_affect_short/par_1/samsung"
+OURA_PATH = "./ifh_affect_short/par_1/oura"
+SAMSUNG_PATH = "./ifh_affect_short/par_1/samsung"
 
 def load_oura_data():
     """Load and process Oura Ring data from CSV files"""
