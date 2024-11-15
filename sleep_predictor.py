@@ -16,7 +16,7 @@ class SleepQualityPredictor:
         self.model = None
         self.scaler = StandardScaler()
         
-    def preprocess_samsung_data(self, awake_times, hrv_data, imu, ppg, pedometer_data):
+    def preprocess_samsung_data(self, awake_times, hrv_data, pedometer_data):
         """Preprocess Samsung sensor data"""
         # Process awake times
         awake_df = pd.DataFrame()
@@ -192,10 +192,15 @@ class SleepQualityPredictor:
         r2 = r2_score(y_test, y_pred)
         
         # Get feature importance
-        feature_importance = pd.DataFrame({
+        # feature_importance = pd.DataFrame({
+        #     'feature': X.columns,
+        #     'importance': self.model.feature_importances_
+        # }).sort_values('importance', ascending=False)
+
+        feature_importance = {
             'feature': X.columns,
             'importance': self.model.feature_importances_
-        }).sort_values('importance', ascending=False)
+        }
         
         # Store test and prediction data for visualization
         self.y_test = y_test
@@ -258,7 +263,7 @@ class SleepQualityVisualizer:
         plt.legend()
         
         plt.tight_layout()
-        plt.show()
+        # plt.show()
     
     @staticmethod
     def plot_activity_patterns(combined_features):
@@ -303,7 +308,7 @@ class SleepQualityVisualizer:
         plt.legend()
         
         plt.tight_layout()
-        plt.show()
+        # plt.show()
     
     @staticmethod
     def plot_physiological_metrics(combined_features):
@@ -344,7 +349,7 @@ class SleepQualityVisualizer:
         plt.legend()
         
         plt.tight_layout()
-        plt.show()
+        # plt.show()
     
     @staticmethod
     def plot_prediction_analysis(y_test, y_pred, feature_importance):
@@ -364,13 +369,13 @@ class SleepQualityVisualizer:
         
         # Plot 2: Feature Importance
         plt.subplot(2, 1, 2)
-        top_features = feature_importance.head(10)
-        sns.barplot(x='importance', y='feature', data=top_features)
+        # top_features = feature_importance.head(10)
+        # sns.barplot(x='importance', y='feature', data=top_features)
         plt.title('Top 10 Most Important Features')
         plt.xlabel('Feature Importance')
         
         plt.tight_layout()
-        plt.show()
+        # plt.show()
     
     @staticmethod
     def plot_correlation_matrix(combined_features):
@@ -414,16 +419,19 @@ class EnhancedSleepQualityPredictor(SleepQualityPredictor):
 
 
 
-def build_sleep_predictor(samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, samsung_pedometer,
-                         oura_sleep, oura_activity, oura_readiness, oura_heart_rate):
+def build_sleep_predictor(df_list):
     """Main function to build and train the sleep predictor"""
     # predictor = SleepQualityPredictor()
+
+    samsung_awake, samsung_hrv, samsung_pedometer, \
+        oura_sleep, oura_activity, oura_readiness, oura_heart_rate = df_list
+    
 
     predictor = EnhancedSleepQualityPredictor()
     
     # Preprocess data
     samsung_features = predictor.preprocess_samsung_data(
-        samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, samsung_pedometer
+        samsung_awake, samsung_hrv, samsung_pedometer
     )
     
     oura_features = predictor.preprocess_oura_data(
@@ -438,6 +446,9 @@ def build_sleep_predictor(samsung_awake, samsung_hrv, samsung_imu, samsung_ppg, 
     
     # Train and evaluate model
     results = predictor.train_model(X, y)
+
+    # print('>>>>>>>>', type(results))
+    # print(results.keys())
 
 
     # Generate visualizations
@@ -462,7 +473,6 @@ if __name__ == "__main__":
     # ppg_file = os.path.join(file_path_samsung, 'ppg.csv')
 
     pressure_file = os.path.join(file_path_samsung, 'pressure.csv')
-    
     pedometer_file = os.path.join(file_path_samsung, 'pedometer.csv')
 
 
@@ -494,8 +504,6 @@ if __name__ == "__main__":
 
     samsung_imu_data = []
     samsung_ppg_data = []
-
-
     samsung_pedometer_data = pd.read_csv(pedometer_file)
 
     oura_activity_data = pd.read_csv(oura_activity_file)
@@ -504,23 +512,25 @@ if __name__ == "__main__":
     oura_sleep_data = pd.read_csv(oura_sleep_file)
 
 
-    # Load your data
-    predictor, results, combined_features = build_sleep_predictor(
-        samsung_awake_data,
+    df_list = [samsung_awake_data,
         samsung_hrv_data,
-        samsung_imu_data,
-        samsung_ppg_data,
+        # samsung_imu_data,
+        # samsung_ppg_data,
         samsung_pedometer_data,
         oura_sleep_data,
         oura_activity_data,
         oura_readiness_data,
-        oura_heart_rate_data
+        oura_heart_rate_data]
+
+    # Load your data
+    predictor, results, combined_features = build_sleep_predictor(
+        df_list
     )
 
     # Check model performance
     print(f"Model R² Score: {results['r2']}")
     print("\nMost important features:")
-    print(results['feature_importance'].head())
+    print(results['feature_importance'])
 
     # Make predictions for new data
     ### select a test data for example another participant
