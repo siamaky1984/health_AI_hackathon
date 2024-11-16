@@ -22,6 +22,52 @@ load_dotenv()
 
 app = FastAPI()
 
+#############################################################################
+st.set_page_config(
+      page_title="Health_AI_Hackathon_team57",
+      page_icon=":)",
+      layout="wide",
+      initial_sidebar_state="expanded",
+      menu_items={
+          'Get Help': 'https://github.com/siamaky1984/health_AI_hackathon/',
+          'About': "# Welcome to your personalized Health and Wellness Recommendation app!"
+      }
+  )
+
+st.markdown("""
+<style>
+.big-font {
+    font-size:30px !important;
+.medium-font {
+    font-size:20px !important;
+.small-font {
+    font-size:10px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+#############################################################################
+#Configuring the title and sidebar for the app created by streamlit
+
+#st.title("The Generative AI in Health Hackathon Project")
+st.markdown('<p class="big-font">  </p>', unsafe_allow_html=True)
+st.markdown('<p class="big-font">  </p>', unsafe_allow_html=True)
+
+st.sidebar.markdown('<p class="medium-font">The Generative AI in Health Hackathon Project</p> Siamak Yousefi, Hanieh Haeri, Smaneh Movassaghi </p>', unsafe_allow_html=True)
+
+
+st.sidebar.markdown('<p class="small-font">This is a simple app created to analyze sleep and activity data collected\
+                        from multiple participants and sensors such as Samsung watch, Oura, imu, ppg, and etc.\
+                        The data source can be further studied at https://datadryad.org/stash/dataset/doi:10.7280/D1WH6T  </p> \
+                    <p>This app analyses a participants sleep and activity and provides timeseries of health vitals as well as\
+                    some basic statistics for these vitals.\
+                    <p> The participant can further explore the app and receive mutimodal health recommendations along with\
+                    references to visit as needed.</p> \
+                    <p>For more information, visit our Git Hub at https://github.com/siamaky1984/health_AI_hackathon</p> \
+                    Comments? <p>Email: </p>'
+                    , unsafe_allow_html=True)
+###########################################################################
+
 
 
 # def load_oura_data():
@@ -884,21 +930,21 @@ if __name__ == "__main__":
     # Load sleepQualityPredictor class
     sleep_quality_predictor = SleepQualityPredictor() 
 
-    st.sidebar.markdown("# Data Loading Debug")
+    #st.sidebar.markdown("# Data Loading Debug")
     
     # Check basic path existence
-    st.sidebar.markdown("## Path Check")
-    st.sidebar.write(f"Oura path exists: {os.path.exists(OURA_PATH)}")
-    st.sidebar.write(f"Samsung path exists: {os.path.exists(SAMSUNG_PATH)}")
+    # st.sidebar.markdown("## Path Check")
+    # st.sidebar.write(f"Oura path exists: {os.path.exists(OURA_PATH)}")
+    # st.sidebar.write(f"Samsung path exists: {os.path.exists(SAMSUNG_PATH)}")
     
-    # Show directory contents
-    st.sidebar.markdown("## Directory Contents")
-    if os.path.exists(OURA_PATH):
-        st.sidebar.write("Oura directory contents:")
-        st.sidebar.write([f for f in os.listdir(OURA_PATH) if f.endswith('.csv')])
+    # # Show directory contents
+    # st.sidebar.markdown("## Directory Contents")
+    # if os.path.exists(OURA_PATH):
+    #     st.sidebar.write("Oura directory contents:")
+    #     st.sidebar.write([f for f in os.listdir(OURA_PATH) if f.endswith('.csv')])
     
-    if os.path.exists(SAMSUNG_PATH):
-        st.sidebar.write("Samsung directory contents:")
-        st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
+    # if os.path.exists(SAMSUNG_PATH):
+    #     st.sidebar.write("Samsung directory contents:")
+    #     st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
     
     create_streamlit_interface(sleep_quality_predictor)
