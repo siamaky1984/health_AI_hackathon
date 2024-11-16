@@ -20,7 +20,7 @@ import openai
 
 from sleep_score_predict import SleepQualityPredictor
 
-openai_api_key_input = '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'
+openai_api_key_input= ''
 
 # Load environment variables
 load_dotenv()
