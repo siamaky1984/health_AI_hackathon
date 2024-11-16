@@ -672,33 +672,40 @@ def create_streamlit_interface(sleep_quality_predictor):
             st.subheader("Samsung Health Data")
              samsung_data = health_data['samsung_data']
             
-             steps = st.number_input("Steps", 
-                 value=int(samsung_data['steps']), 
-                 min_value=0,
-                 max_value=50000,
-                 step=100,
-                 help="Daily step count")
+             # steps = st.number_input("Steps", 
+             #     value=int(samsung_data['steps']), 
+             #     min_value=0,
+             #     max_value=50000,
+             #     step=100,
+             #     help="Daily step count")
             
-             heart_rate = st.number_input("Heart Rate (bpm)", 
-                 value=int(samsung_data['heart_rate']),
-                 min_value=40,
-                 max_value=200, 
-                 step=1,
-                 help="Average heart rate")
+             # heart_rate = st.number_input("Heart Rate (bpm)", 
+             #     value=int(samsung_data['heart_rate']),
+             #     min_value=40,
+             #     max_value=200, 
+             #     step=1,
+             #     help="Average heart rate")
             
-             sleep_duration = st.number_input("Sleep Duration (hours)", 
-                 value=float(samsung_data['sleep_duration']),
-                 min_value=0.0,
-                 max_value=24.0, 
-                 step=0.1,
-                 help="Total sleep duration")
+             # sleep_duration = st.number_input("Sleep Duration (hours)", 
+             #     value=float(samsung_data['sleep_duration']),
+             #     min_value=0.0,
+             #     max_value=24.0, 
+             #     step=0.1,
+             #     help="Total sleep duration")
             
-             stress = st.number_input("Stress Level", 
-                 value=int(samsung_data['stress_level']),
-                 min_value=0,
-                 max_value=100, 
-                 step=1,
-                 help="Average stress level (0-100)")
+             # stress = st.number_input("Stress Level", 
+             #     value=int(samsung_data['stress_level']),
+             #     min_value=0,
+             #     max_value=100, 
+             #     step=1,
+             #     help="Average stress level (0-100)")
+          
+             # Store the values in variables
+             steps = int(samsung_data['steps'])
+             heart_rate = int(samsung_data['heart_rate'])
+             sleep_duration = float(samsung_data['sleep_duration'])
+             stress_level = int(samsung_data['stress_level'])
+
             
              # Display current values
             st.info("Current Samsung Health Metrics")
@@ -711,34 +718,40 @@ def create_streamlit_interface(sleep_quality_predictor):
             st.subheader("Oura Ring Data")
              oura_data = health_data['oura_data']
             
-             sleep_score = st.number_input("Sleep Score", 
-                 value=int(oura_data['sleep_score']),
-                 min_value=0,
-                 max_value=100, 
-                 step=1,
-                 help="Overall sleep quality score")
+             # sleep_score = st.number_input("Sleep Score", 
+             #     value=int(oura_data['sleep_score']),
+             #     min_value=0,
+             #     max_value=100, 
+             #     step=1,
+             #     help="Overall sleep quality score")
             
-             readiness = st.number_input("Readiness Score", 
-                 value=int(oura_data['readiness_score']),
-                 min_value=0,
-                 max_value=100, 
-                 step=1,
-                 help="Daily readiness score")
+             # readiness = st.number_input("Readiness Score", 
+             #     value=int(oura_data['readiness_score']),
+             #     min_value=0,
+             #     max_value=100, 
+             #     step=1,
+             #     help="Daily readiness score")
             
-             activity_score = st.number_input("Activity Score", 
-                 value=int(oura_data['activity_score']),
-                 min_value=0,
-                 max_value=100, 
-                 step=1,
-                 help="Daily activity score")
+             # activity_score = st.number_input("Activity Score", 
+             #     value=int(oura_data['activity_score']),
+             #     min_value=0,
+             #     max_value=100, 
+             #     step=1,
+             #     help="Daily activity score")
             
-             hrv = st.number_input("HRV", 
-                 value=int(oura_data['hrv']),
-                 min_value=0,
-                 max_value=200, 
-                 step=1,
-                 help="Average HRV")
+             # hrv = st.number_input("HRV", 
+             #     value=int(oura_data['hrv']),
+             #     min_value=0,
+             #     max_value=200, 
+             #     step=1,
+             #     help="Average HRV")
             
+              
+            # Store the values in variables
+            sleep_score = int(oura_data['sleep_score'])
+            readiness = int(oura_data['readiness_score'])
+            activity_score = int(oura_data['activity_score'])
+            hrv = int(oura_data['hrv'])
             # Display current values
             st.info("Current Oura Ring Metrics")
             st.metric("Sleep Quality", f"{sleep_score}/100")
