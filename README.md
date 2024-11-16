@@ -16,8 +16,8 @@ It will load the sleep_score_get function to run a random forest and predict the
 
 The visualizer also is available by running the following:
 
-streamlit run sleep_predictor.py 
-
+streamlit run sleep_predictor.py -- --data_path [PATH to DATA folder IFH] --start_date [YYY-MM-DD] --end_date [YYYY-MM-DD]
+ 
 This will use a sample data in this repo to show some stats.
 
 
