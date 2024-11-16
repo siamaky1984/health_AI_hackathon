@@ -670,7 +670,7 @@ def create_streamlit_interface(sleep_quality_predictor):
         
         with col1:
             st.subheader("Samsung Health Data")
-             samsung_data = health_data['samsung_data']
+            samsung_data = health_data['samsung_data']
             
              # steps = st.number_input("Steps", 
              #     value=int(samsung_data['steps']), 
@@ -700,11 +700,11 @@ def create_streamlit_interface(sleep_quality_predictor):
              #     step=1,
              #     help="Average stress level (0-100)")
           
-             # Store the values in variables
-             steps = int(samsung_data['steps'])
-             heart_rate = int(samsung_data['heart_rate'])
-             sleep_duration = float(samsung_data['sleep_duration'])
-             stress_level = int(samsung_data['stress_level'])
+            # Store the values in variables
+            steps = int(samsung_data['steps'])
+            heart_rate = int(samsung_data['heart_rate'])
+            sleep_duration = float(samsung_data['sleep_duration'])
+            stress_level = int(samsung_data['stress_level'])
 
             
              # Display current values
@@ -716,7 +716,7 @@ def create_streamlit_interface(sleep_quality_predictor):
         
         with col2:
             st.subheader("Oura Ring Data")
-             oura_data = health_data['oura_data']
+            oura_data = health_data['oura_data']
             
              # sleep_score = st.number_input("Sleep Score", 
              #     value=int(oura_data['sleep_score']),
