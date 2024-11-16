@@ -704,7 +704,7 @@ def create_streamlit_interface(sleep_quality_predictor):
             steps = int(samsung_data['steps'])
             heart_rate = int(samsung_data['heart_rate'])
             sleep_duration = float(samsung_data['sleep_duration'])
-            stress_level = int(samsung_data['stress_level'])
+            #stress_level = int(samsung_data['stress_level'])
 
             
              # Display current values
