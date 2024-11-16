@@ -11,6 +11,7 @@ from datetime import datetime,timedelta
 import os
 from dotenv import load_dotenv
 import json
+import argparse
 
 # import cudf
 
@@ -22,10 +23,6 @@ load_dotenv()
 app = FastAPI()
 
 
-
-#  global paths
-OURA_PATH = "./ifh_affect/par_5/oura"
-SAMSUNG_PATH = "./ifh_affect/par_5/samsung"
 
 # def load_oura_data():
 #     """Load and process Oura Ring data from CSV files"""
@@ -871,21 +868,21 @@ def create_streamlit_interface(sleep_quality_predictor):
 
 if __name__ == "__main__":
 
+    parser = argparse.ArgumentParser(description='sensor path')
+    parser.add_argument('--data_path', type=str, default='ifh_affect', help='Mode of operation: train or generate')
+    parser.add_argument('--par_ID', type=int, default=1)
+
+    args = parser.parse_args()
+
+    OURA_PATH = args.data_path + '/par_' + str(args.par_ID) + '/oura/'
+    SAMSUNG_PATH = args.data_path+ '/par_' + str( args.par_ID ) + '/samsung/'
+
+    print(OURA_PATH)
+    print(SAMSUNG_PATH)
+    
+
     # Load sleepQualityPredictor class
     sleep_quality_predictor = SleepQualityPredictor() 
-    
-    # merged_df = get_health_data(sleep_quality_predictor)
-
-    # print('merged_df', merged_df.keys())
-    # print(merged_df.keys())
-    # print(merged_df['samsung_data'].keys())
-    # print(merged_df['samsung_data'].values())
-    # print(merged_df['oura_data'].keys())
-    # print(merged_df['oura_data'].values())
-
-    # print(merged_df['merged_df'] )
-    # print(merged_df['merged_df'] )
-
 
     st.sidebar.markdown("# Data Loading Debug")
     
