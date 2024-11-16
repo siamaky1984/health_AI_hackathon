@@ -20,7 +20,7 @@ import openai
 
 from sleep_score_predict import SleepQualityPredictor
 
-openai_api_key_input= ''
+openai_api_key_input= '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'
 
 # Load environment variables
 load_dotenv()
@@ -263,7 +263,7 @@ st.sidebar.markdown('<p class="small-font">This is a simple app created to analy
     
 
 
-def get_health_data(predictor):
+def get_health_data(predictor, args):
     """Get and merge health data"""
     # Load data
     # oura_df = load_oura_data()
@@ -320,7 +320,6 @@ def get_health_data(predictor):
 
 
     combined_df = predictor.engineer_features(samsung_df, oura_df)
-
     print('combined', combined_df.keys())
 
     # Debug: Show data shapes
@@ -335,7 +334,22 @@ def get_health_data(predictor):
     if not samsung_df.empty:
         date_column = [col for col in samsung_df.columns if 'date' in col.lower() or 'time' in col.lower()][0]
         samsung_df['date'] = pd.to_datetime(samsung_df[date_column])
+
+    # print('date', samsung_df['date'][0:10])
+    # print('date', oura_df['date'][0:10])
+
+    ### select chunk of dataframes from start_date to end_date
     
+    samsung_df['df'] = samsung_df['date'].sort_values()
+    oura_df['df'] = oura_df['date'].sort_values()
+
+    samsung_df = samsung_df[(samsung_df['date'] >= args.start_date) & (samsung_df['date'] <= args.end_date)]
+    oura_df = oura_df[(oura_df['date'] >= args.start_date) & (oura_df['date'] <= args.end_date)]
+
+    print('date', samsung_df['date'] )
+    print('date', oura_df['date'])
+    
+
     ### TODO 
     # Merge data if both dataframes have data
     if not oura_df.empty and not samsung_df.empty:
@@ -577,6 +591,8 @@ class HealthAgent:
         response += '\n'
         print('response', response)
 
+        
+        
         # Add recommendations based on keywords
         keywords = {
             'sleep': ['sleep', 'bed', 'rest', 'nap', 'insomnia'],
@@ -584,9 +600,6 @@ class HealthAgent:
             'exercise': ['exercise', 'activity', 'workout', 'fitness'],
             'health': ['health', 'wellness', 'lifestyle', 'habits']
         }
-
-
-
         
         # Find matching categories based on prompt
         matching_categories = []
@@ -706,14 +719,14 @@ class HealthAgent:
 
 
 # Update the create_streamlit_interface function to use HealthAgent
-def create_streamlit_interface(sleep_quality_predictor):
+def create_streamlit_interface(sleep_quality_predictor, args):
     st.title("Sleep Quality Predictor")
     
     # Initialize HealthAgent
     health_agent = HealthAgent()
     
     # Load health data
-    health_data = get_health_data(sleep_quality_predictor)
+    health_data = get_health_data(sleep_quality_predictor, args)
     
     # Create tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -1000,6 +1013,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='sensor path')
     parser.add_argument('--data_path', type=str, default='ifh_affect', help='Mode of operation: train or generate')
     parser.add_argument('--par_ID', type=int, default=1)
+    parser.add_argument('--start_date', type=str, default='2020-03-20', help='date on which to analysis should start')
+    parser.add_argument('--end_date', type=str, default='2020-03-26', help='date on which to analysis should end')
 
     args = parser.parse_args()
 
@@ -1008,6 +1023,11 @@ if __name__ == "__main__":
 
     print(OURA_PATH)
     print(SAMSUNG_PATH)
+
+    # args.start_date='2020-03-25'
+    # args.end_date='2020-04-05'
+
+    args.par_ID = int(args.par_ID)
     
 
     # Load sleepQualityPredictor class
@@ -1030,4 +1050,4 @@ if __name__ == "__main__":
         st.sidebar.write("Samsung directory contents:")
         st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
     
-    create_streamlit_interface(sleep_quality_predictor)
+    create_streamlit_interface(sleep_quality_predictor, args)
