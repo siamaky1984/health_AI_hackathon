@@ -937,14 +937,14 @@ if __name__ == "__main__":
     # st.sidebar.write(f"Oura path exists: {os.path.exists(OURA_PATH)}")
     # st.sidebar.write(f"Samsung path exists: {os.path.exists(SAMSUNG_PATH)}")
     
-    # # Show directory contents
-    # st.sidebar.markdown("## Directory Contents")
-    # if os.path.exists(OURA_PATH):
-    #     st.sidebar.write("Oura directory contents:")
-    #     st.sidebar.write([f for f in os.listdir(OURA_PATH) if f.endswith('.csv')])
+    # Show directory contents
+    st.sidebar.markdown("## Directory Contents")
+    if os.path.exists(OURA_PATH):
+        st.sidebar.write("Oura directory contents:")
+        st.sidebar.write([f for f in os.listdir(OURA_PATH) if f.endswith('.csv')])
     
-    # if os.path.exists(SAMSUNG_PATH):
-    #     st.sidebar.write("Samsung directory contents:")
-    #     st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
+    if os.path.exists(SAMSUNG_PATH):
+        st.sidebar.write("Samsung directory contents:")
+        st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
     
     create_streamlit_interface(sleep_quality_predictor)
