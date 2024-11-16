@@ -887,7 +887,7 @@ def create_streamlit_interface(sleep_quality_predictor):
         with col1:
             st.markdown("### Sleep Analysis")
             st.write(f"Quality: {analysis['sleep_quality']['quality'].title()}")
-            st.write(f"Score: {analysis['sleep_quality']['score']}")
+            st.write(f"Score: {float(analysis['sleep_quality']['score']):.2f}")
             
             if analysis['sleep_quality']['issues']:
                 st.warning("Areas for Improvement:")
@@ -897,7 +897,7 @@ def create_streamlit_interface(sleep_quality_predictor):
         with col2:
             st.markdown("### Activity Analysis")
             st.write(f"Level: {analysis['activity_level']['level'].title()}")
-            st.write(f"Steps: {analysis['activity_level']['steps']:,}")
+            st.write(f"Steps: {int(analysis['activity_level']['steps']):,}")
         
         st.markdown("### Personalized Recommendations")
         for i, rec in enumerate(analysis['recommendations'], 1):
