@@ -50,7 +50,7 @@ st.markdown("""
 #Configuring the title and sidebar for the app created by streamlit
 
 #st.title("The Generative AI in Health Hackathon Project")
-st.markdown('<p class="big-font">  </p>', unsafe_allow_html=True)
+st.markdown('<p class="big-font"> Welcome to your personalized Health and Wellness Recommendation app!  </p>', unsafe_allow_html=True)
 st.markdown('<p class="big-font">  </p>', unsafe_allow_html=True)
 
 st.sidebar.markdown('<p class="medium-font">The Generative AI in Health Hackathon Project</p> Siamak Yousefi, Hanieh Haeri, Smaneh Movassaghi </p>', unsafe_allow_html=True)
