@@ -670,28 +670,28 @@ def create_streamlit_interface(sleep_quality_predictor):
         
         with col1:
             st.subheader("Samsung Health Data")
-            samsung_data = health_data['samsung_data']
+            # samsung_data = health_data['samsung_data']
             
-            steps = st.number_input("Steps", 
-                value=int(samsung_data['steps']), 
-                min_value=0,
-                max_value=50000,
-                step=100,
-                help="Daily step count")
+            # steps = st.number_input("Steps", 
+            #     value=int(samsung_data['steps']), 
+            #     min_value=0,
+            #     max_value=50000,
+            #     step=100,
+            #     help="Daily step count")
             
-            heart_rate = st.number_input("Heart Rate (bpm)", 
-                value=int(samsung_data['heart_rate']),
-                min_value=40,
-                max_value=200, 
-                step=1,
-                help="Average heart rate")
+            # heart_rate = st.number_input("Heart Rate (bpm)", 
+            #     value=int(samsung_data['heart_rate']),
+            #     min_value=40,
+            #     max_value=200, 
+            #     step=1,
+            #     help="Average heart rate")
             
-            sleep_duration = st.number_input("Sleep Duration (hours)", 
-                value=float(samsung_data['sleep_duration']),
-                min_value=0.0,
-                max_value=24.0, 
-                step=0.1,
-                help="Total sleep duration")
+            # sleep_duration = st.number_input("Sleep Duration (hours)", 
+            #     value=float(samsung_data['sleep_duration']),
+            #     min_value=0.0,
+            #     max_value=24.0, 
+            #     step=0.1,
+            #     help="Total sleep duration")
             
             # stress = st.number_input("Stress Level", 
             #     value=int(samsung_data['stress_level']),
@@ -709,35 +709,35 @@ def create_streamlit_interface(sleep_quality_predictor):
         
         with col2:
             st.subheader("Oura Ring Data")
-            oura_data = health_data['oura_data']
+            # oura_data = health_data['oura_data']
             
-            sleep_score = st.number_input("Sleep Score", 
-                value=int(oura_data['sleep_score']),
-                min_value=0,
-                max_value=100, 
-                step=1,
-                help="Overall sleep quality score")
+            # sleep_score = st.number_input("Sleep Score", 
+            #     value=int(oura_data['sleep_score']),
+            #     min_value=0,
+            #     max_value=100, 
+            #     step=1,
+            #     help="Overall sleep quality score")
             
-            readiness = st.number_input("Readiness Score", 
-                value=int(oura_data['readiness_score']),
-                min_value=0,
-                max_value=100, 
-                step=1,
-                help="Daily readiness score")
+            # readiness = st.number_input("Readiness Score", 
+            #     value=int(oura_data['readiness_score']),
+            #     min_value=0,
+            #     max_value=100, 
+            #     step=1,
+            #     help="Daily readiness score")
             
-            activity_score = st.number_input("Activity Score", 
-                value=int(oura_data['activity_score']),
-                min_value=0,
-                max_value=100, 
-                step=1,
-                help="Daily activity score")
+            # activity_score = st.number_input("Activity Score", 
+            #     value=int(oura_data['activity_score']),
+            #     min_value=0,
+            #     max_value=100, 
+            #     step=1,
+            #     help="Daily activity score")
             
-            hrv = st.number_input("HRV", 
-                value=int(oura_data['hrv']),
-                min_value=0,
-                max_value=200, 
-                step=1,
-                help="Average HRV")
+            # hrv = st.number_input("HRV", 
+            #     value=int(oura_data['hrv']),
+            #     min_value=0,
+            #     max_value=200, 
+            #     step=1,
+            #     help="Average HRV")
             
             # Display current values
             st.info("Current Oura Ring Metrics")
