@@ -20,7 +20,7 @@ import openai
 
 from sleep_score_predict import SleepQualityPredictor
 
-openai_api_key_input= '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'
+openai_api_key_input= ''
 
 # Load environment variables
 load_dotenv()
@@ -1026,8 +1026,6 @@ if __name__ == "__main__":
 
     # args.start_date='2020-03-25'
     # args.end_date='2020-04-05'
-
-    args.par_ID = int(args.par_ID)
     
 
     # Load sleepQualityPredictor class
