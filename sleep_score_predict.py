@@ -369,8 +369,8 @@ class SleepQualityVisualizer:
         
         # Plot 2: Feature Importance
         plt.subplot(2, 1, 2)
-        # top_features = feature_importance.head(10)
-        # sns.barplot(x='importance', y='feature', data=top_features)
+        top_features = feature_importance# .head(10)
+        sns.barplot(x='importance', y='feature', data=top_features)
         plt.title('Top 10 Most Important Features')
         plt.xlabel('Feature Importance')
         

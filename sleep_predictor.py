@@ -12,6 +12,10 @@ import os
 from dotenv import load_dotenv
 import json
 
+# import cudf
+
+from sleep_score_predict import SleepQualityPredictor
+
 # Load environment variables
 load_dotenv()
 
@@ -20,123 +24,257 @@ app = FastAPI()
 
 
 #  global paths
-OURA_PATH = "./ifh_affect_short/par_1/oura"
-SAMSUNG_PATH = "./ifh_affect_short/par_1/samsung"
+OURA_PATH = "./ifh_affect/par_5/oura"
+SAMSUNG_PATH = "./ifh_affect/par_5/samsung"
 
-def load_oura_data():
-    """Load and process Oura Ring data from CSV files"""
-    all_data = []
+# def load_oura_data():
+#     """Load and process Oura Ring data from CSV files"""
+#     all_data = []
     
-    if not os.path.exists(OURA_PATH):
-        st.error(f"Oura path not found: {OURA_PATH}")
-        return pd.DataFrame()
+#     if not os.path.exists(OURA_PATH):
+#         st.error(f"Oura path not found: {OURA_PATH}")
+#         return pd.DataFrame()
     
-    csv_files = []
-    for root, _, files in os.walk(OURA_PATH):
-        for file in files:
-            if file.endswith('.csv'):
-                csv_files.append(os.path.join(root, file))
+#     csv_files = []
+#     for root, _, files in os.walk(OURA_PATH):
+#         for file in files:
+#             if file.endswith('.csv'):
+#                 csv_files.append(os.path.join(root, file))
     
-    st.sidebar.write(f"Found {len(csv_files)} Oura CSV files")
+#     st.sidebar.write(f"Found {len(csv_files)} Oura CSV files")
     
-    # Process each CSV file
-    for file_path in csv_files:
-        try:
-            df = pd.read_csv(file_path)
-            st.sidebar.write(f"\nProcessing: {os.path.basename(file_path)}")
-            st.sidebar.write("Columns found:", list(df.columns))
+#     # Process each CSV file
+#     for file_path in csv_files:
+#         try:
+#             # df = pd.read_csv(file_path)
+#             df = cudf.read_csv(file_path) ### use cudf 
+
+#             st.sidebar.write(f"\nProcessing: {os.path.basename(file_path)}")
+#             st.sidebar.write("Columns found:", list(df.columns))
             
-            # Map the columns to our expected format
-            column_mapping = {
-                'Sleep Score': 'sleep_score',
-                'Total Sleep Score': 'sleep_score',
-                'Sleep score': 'sleep_score',
-                'Readiness Score': 'readiness_score',
-                'Readiness score': 'readiness_score',
-                'Activity Score': 'activity_score',
-                'Activity score': 'activity_score',
-                'Deep Sleep': 'deep_sleep',
-                'REM Sleep': 'rem_sleep',
-                'Average HRV': 'hrv',
-                'HRV': 'hrv',
-                'Date': 'date',
-                'Timestamp': 'date'
-            }
-            
-            # Rename columns if they exist
-            df = df.rename(columns=column_mapping)
-            
-            all_data.append(df)
-            
-        except Exception as e:
-            st.sidebar.error(f"Error processing {os.path.basename(file_path)}: {str(e)}")
-    
-    if all_data:
-        combined_df = pd.concat(all_data, ignore_index=True)
-        st.sidebar.write("\nFinal columns after processing:", list(combined_df.columns))
-        return combined_df
-    else:
-        return pd.DataFrame()
+#             # Map the columns to our expected format
+#             column_mapping = {
+#                 'Sleep Score': 'sleep_score',
+#                 'Total Sleep Score': 'sleep_score',
+#                 'Sleep score': 'sleep_score',
+#                 'Readiness Score': 'readiness_score',
+#                 'Activity Score': 'activity_score',
+#                 'Deep Sleep': 'deep_sleep',
+#                 'REM Sleep': 'rem_sleep',
+#                 'Average HRV': 'hrv',
+#                 'HRV': 'hrv',
+#                 'Date': 'date',
+#                 'Timestamp': 'date'
+#             }
 
 
-def load_samsung_data():
-    """Load and process Samsung Health data from CSV files"""
-    all_data = []
-    
-    if not os.path.exists(SAMSUNG_PATH):
-        st.error(f"Samsung path not found: {SAMSUNG_PATH}")
-        return pd.DataFrame()
-    
-    csv_files = []
-    for root, _, files in os.walk(SAMSUNG_PATH):
-        for file in files:
-            if file.endswith('.csv'):
-                csv_files.append(os.path.join(root, file))
-    
-    st.sidebar.write(f"Found {len(csv_files)} Samsung CSV files")
-    
-    # Process each CSV file
-    for file_path in csv_files:
-        try:
-            df = pd.read_csv(file_path)
-            st.sidebar.write(f"\nProcessing: {os.path.basename(file_path)}")
-            st.sidebar.write("Columns found:", list(df.columns))
-            
-            # Map the columns to our expected format
-            column_mapping = {
-                'Step count': 'steps',
-                'Steps': 'steps',
-                'Heart Rate': 'heart_rate',
-                'Heart rate': 'heart_rate',
-                'Sleep Duration': 'sleep_duration',
-                'Sleep duration': 'sleep_duration',
-                'Stress Level': 'stress_level',
-                'Stress level': 'stress_level',
-                'Date': 'date',
-                'Timestamp': 'date'
-            }
-            
-            # Rename columns if they exist
-            df = df.rename(columns=column_mapping)
-            
-            all_data.append(df)
-            
-        except Exception as e:
-            st.sidebar.error(f"Error processing {os.path.basename(file_path)}: {str(e)}")
-    
-    if all_data:
-        combined_df = pd.concat(all_data, ignore_index=True)
-        st.sidebar.write("\nFinal columns after processing:", list(combined_df.columns))
-        return combined_df
-    else:
-        return pd.DataFrame()
+#             column_mapping={
+#                 'inactive': 'inactive',
+#                 'hr_average': 'hr_average',
+#                 'hr_lowest':'hr_lowest',
+#                 'awake': 
 
-def get_health_data():
+
+#             }
+
+
+#             column_mapping ={
+#                 'score_activity_balance': 'activity_score',
+
+#             }
+
+#             heart: 'heart_rate', 'heart_rmssd'
+#             readiness: 'score', 'score_activity_balance', 'score_hrv_balance','score_previous_day',
+#                         'score_previous_night', 'score_recovery_index','score_resting_hr', 'score_sleep_balance', 'score_temperature'
+#             activity: 'date', 'score', 'score_stay_active', 'score_move_every_hour',
+#                             'score_meet_daily_targets', 'score_training_frequency',
+#                             'score_training_volume', 'score_recovery_time', 'cal_active',
+#                             'cal_total', 'daily_movement', 'inactivity_alerts', 'steps', 'non_wear',
+#                             'rest', 'inactive', 'low', 'medium', 'high', 'average_met',
+#                             'met_min_inactive', 'met_min_low', 'met_min_medium', 'met_min_high',
+#                             'day_start_timestamp', 'day_end_timestamp'
+            
+#             sleep: 'score', 'score_alignment', 'score_deep', 'score_disturbances',
+#                         'score_efficiency', 'score_latency', 'score_rem', 'score_total',
+#                         'duration', 'awake', 'light', 'rem', 'deep', 'total', 'onset_latency',
+#                         'midpoint_time', 'efficiency', 'restless', 'hr_average', 'hr_lowest',
+#                         'rmssd', 'breath_average', 'bedtime_start_midnight_delta',
+#                         'bedtime_end_midnight_delta', 'temperature_delta',
+#                         'bedtime_start_timestamp', 'bedtime_end_timestamp'
+            
+#             # Rename columns if they exist
+#             df = df.rename(columns=column_mapping)
+
+#             print('df head', file_path)
+#             print(df.keys())
+#             print( df.head())
+            
+#             all_data.append(df)
+            
+#         except Exception as e:
+#             st.sidebar.error(f"Error processing {os.path.basename(file_path)}: {str(e)}")
+    
+#     if all_data:
+#         combined_df = pd.concat(all_data, ignore_index=True)
+#         st.sidebar.write("\nFinal columns after processing:", list(combined_df.columns))
+#         return combined_df
+#     else:
+#         return pd.DataFrame()
+
+
+# def load_samsung_data():
+#     """Load and process Samsung Health data from CSV files"""
+#     all_data = []
+    
+#     if not os.path.exists(SAMSUNG_PATH):
+#         st.error(f"Samsung path not found: {SAMSUNG_PATH}")
+#         return pd.DataFrame()
+    
+#     csv_files = []
+#     for root, _, files in os.walk(SAMSUNG_PATH):
+#         for file in files:
+#             if file.endswith('.csv'):
+#                 csv_files.append(os.path.join(root, file))
+    
+#     st.sidebar.write(f"Found {len(csv_files)} Samsung CSV files")
+    
+#     # Process each CSV file
+#     for file_path in csv_files:
+#         # if 'imu' in file_path:
+#         #     continue
+#         try:
+#             # df = pd.read_csv(file_path)
+#             df = cudf.read_csv(file_path)
+
+#             st.sidebar.write(f"\nProcessing: {os.path.basename(file_path)}")
+#             st.sidebar.write("Columns found:", list(df.columns))
+            
+#             # Map the columns to our expected format
+#             column_mapping = {
+#                 'Step count': 'num_total_steps',
+#                 'Steps': 'num_total_steps',
+#                 'Heart Rate': 'heart_rate',
+#                 'Sleep Duration': 'sleep_duration',
+#                 'Stress Level': 'stress_level',
+#                 'Date': 'date',
+#                 'Timestamp': 'date'
+#             }
+
+#             column_mapping = {
+#                 'num_total_steps': 'steps',
+#                 'hrv_meannn': 'heart_rate',
+
+
+
+                 
+#             }
+
+#             awake_times: 'timestamp_start', 'timestamp_end', 'state'
+#             hrv_1min:  'timestamp', 'hrv_meannn', 'hrv_sdnn', 'hrv_rmssd', 'hrv_sdsd',
+#                     'hrv_cvnn', 'hrv_cvsd', 'hrv_mediannn', 'hrv_madnn', 'hrv_mcvnn',
+#                     'hrv_iqrnn', 'hrv_prc80nn', 'hrv_pnn50', 'hrv_pnn20', 'hrv_minnn',
+#                     'hrv_maxnn', 'hrv_tinn', 'hrv_hti', 'hrv_ulf', 'hrv_vlf', 'hrv_lf',
+#                     'hrv_hf', 'hrv_vhf', 'hrv_lfhf', 'hrv_lfn', 'hrv_hfn', 'hrv_lnhf',
+#                     'hrv_sd1', 'hrv_sd2', 'hrv_sd1sd2', 'hrv_s', 'hr', 'ulf', 'vlf', 'lf',
+#                     'hf', 'vhf', 'lfhf', 'lfn', 'hfn', 'lnhf'
+            
+#             ppg: 'timestamp', 'ppg', 'hr'
+#             pedometer: 'timestamp', 'num_total_steps', 'num_total_walking_steps',
+#                     'num_total_running_steps', 'move_distance_meter', 'cal_burn_kcal',
+#                     'last_speed_kmh', 'last_step_freq', 'last_state_level',
+#                     'last_state_class' 
+            
+#             imu: 'timestamp', 'accx', 'accy', 'accz', 'gyrx', 'gyry', 'gyrz'
+#             hrv_5min: 'timestamp', 'hrv_meannn', 'hrv_sdnn', 'hrv_rmssd', 'hrv_sdsd',
+#                         'hrv_cvnn', 'hrv_cvsd', 'hrv_mediannn', 'hrv_madnn', 'hrv_mcvnn',
+#                         'hrv_iqrnn', 'hrv_prc80nn', 'hrv_pnn50', 'hrv_pnn20', 'hrv_minnn',
+#                         'hrv_maxnn', 'hrv_tinn', 'hrv_hti', 'hrv_ulf', 'hrv_vlf', 'hrv_lf',
+#                         'hrv_hf', 'hrv_vhf', 'hrv_lfhf', 'hrv_lfn', 'hrv_hfn', 'hrv_lnhf',
+#                         'hrv_sd1', 'hrv_sd2', 'hrv_sd1sd2', 'hrv_s', 'hr'
+            
+#             pressure: 'timestamp', 'pressure'
+
+#             # Rename columns if they exist
+#             df = df.rename(columns=column_mapping)
+
+#             print('df head >>>>>>>>>', file_path)
+#             print( df.keys())
+#             print( df.head() )
+            
+#             all_data.append(df)
+            
+#         except Exception as e:
+#             st.sidebar.error(f"Error processing {os.path.basename(file_path)}: {str(e)}")
+    
+#     if all_data:
+#         combined_df = pd.concat(all_data, ignore_index=True)
+#         st.sidebar.write("\nFinal columns after processing:", list(combined_df.columns))
+#         return combined_df
+#     else:
+#         return pd.DataFrame()
+    
+
+
+def get_health_data(predictor):
     """Get and merge health data"""
     # Load data
-    oura_df = load_oura_data()
-    samsung_df = load_samsung_data()
+    # oura_df = load_oura_data()
+    # samsung_df = load_samsung_data()
+
+    ## for samsung
+    samsung_sensor_list = ['samsung_awake',
+        'samsung_hrv',
+        'samsung_imu',
+        'samsung_ppg_data',
+        'samsung_pedometer_data']
     
+    awake_file = os.path.join(SAMSUNG_PATH, 'awake_times.csv')
+    hrv_file = os.path.join(SAMSUNG_PATH, 'hrv_1min.csv')
+    imu_file = os.path.join(SAMSUNG_PATH, 'imu.csv')
+    ppg_file = os.path.join(SAMSUNG_PATH, 'ppg.csv')
+    pressure_file = os.path.join(SAMSUNG_PATH, 'pressure.csv')
+    pedometer_file = os.path.join(SAMSUNG_PATH, 'pedometer.csv')
+
+    samsung_awake_data = pd.read_csv(awake_file)
+    samsung_hrv_data = pd.read_csv(hrv_file)
+    # samsung_imu_data = pd.read_csv(imu_file)
+    # samsung_ppg_data = pd.read_csv(ppg_file)
+    samsung_pressure_data = pd.read_csv(pressure_file)
+    samsung_pedometer_data = pd.read_csv(pedometer_file)
+
+    
+    samsung_df = predictor.preprocess_samsung_data(
+        samsung_awake_data, samsung_hrv_data, samsung_pedometer_data
+    )
+    
+    print('samsung', samsung_df.keys())
+
+    ## do it for oura
+    oura_sensor_list = ['oura_sleep_data',
+        'oura_activity_data',
+        'oura_readiness_data',
+        'oura_heart_rate_data']
+
+    oura_sleep_file = os.path.join(OURA_PATH, 'sleep.csv')
+    oura_activity_file = os.path.join(OURA_PATH, 'activity.csv')
+    oura_readiness_file = os.path.join(OURA_PATH, 'readiness.csv')
+    oura_heart_rate_file = os.path.join(OURA_PATH, 'heart_rate.csv')
+
+    oura_activity_data = pd.read_csv(oura_activity_file)
+    oura_readiness_data = pd.read_csv(oura_readiness_file)
+    oura_heart_rate_data = pd.read_csv(oura_heart_rate_file)
+    oura_sleep_data = pd.read_csv(oura_sleep_file)
+    
+    oura_df = predictor.preprocess_oura_data(
+        oura_sleep_data, oura_activity_data, oura_readiness_data, oura_heart_rate_data
+    )
+    print('oura', oura_df.keys())
+
+
+    combined_df = predictor.engineer_features(samsung_df, oura_df)
+
+    print('combined', combined_df.keys())
+
     # Debug: Show data shapes
     st.sidebar.write("Oura data shape:", oura_df.shape if not oura_df.empty else "Empty")
     st.sidebar.write("Samsung data shape:", samsung_df.shape if not samsung_df.empty else "Empty")
@@ -150,6 +288,7 @@ def get_health_data():
         date_column = [col for col in samsung_df.columns if 'date' in col.lower() or 'time' in col.lower()][0]
         samsung_df['date'] = pd.to_datetime(samsung_df[date_column])
     
+    ### TODO 
     # Merge data if both dataframes have data
     if not oura_df.empty and not samsung_df.empty:
         merged_df = pd.merge(oura_df, samsung_df, on='date', how='outer')
@@ -161,25 +300,47 @@ def get_health_data():
             st.warning("No Oura data found")
         if samsung_df.empty:
             st.warning("No Samsung data found")
-    
-    # Create return dictionary with default values if needed
+
+
     return {
         'oura_data': {
-            'sleep_score': oura_df['sleep_score'].iloc[-1] if not oura_df.empty and 'sleep_score' in oura_df.columns else 75,
-            'readiness_score': oura_df['readiness_score'].iloc[-1] if not oura_df.empty and 'readiness_score' in oura_df.columns else 80,
-            'activity_score': oura_df['activity_score'].iloc[-1] if not oura_df.empty and 'activity_score' in oura_df.columns else 70,
-            'deep_sleep': oura_df['deep_sleep'].iloc[-1] if not oura_df.empty and 'deep_sleep' in oura_df.columns else 2,
-            'rem_sleep': oura_df['rem_sleep'].iloc[-1] if not oura_df.empty and 'rem_sleep' in oura_df.columns else 1.5,
-            'hrv': oura_df['hrv'].iloc[-1] if not oura_df.empty and 'hrv' in oura_df.columns else 50
+            'sleep_score': np.mean(oura_df['score_sleep']), # if not oura_df.empty and 'sleep_score' in oura_df.columns else 75,
+            'readiness_score': np.mean(oura_df['score_temperature']), # if not oura_df.empty and 'readiness_score' in oura_df.columns else 80,
+            'activity_score': np.mean(oura_df['score_activity']), # if not oura_df.empty and 'activity_score' in oura_df.columns else 70,
+            'deep_sleep': np.mean(oura_df['score_sleep_balance']), # if not oura_df.empty and 'deep_sleep' in oura_df.columns else 2,
+            'rem_sleep': np.mean(oura_df['rem']), # if not oura_df.empty and 'rem_sleep' in oura_df.columns else 1.5,
+            'hrv': np.mean(oura_df['hr_average']), # if not oura_df.empty and 'hrv' in oura_df.columns else 50
         },
         'samsung_data': {
-            'steps': samsung_df['steps'].iloc[-1] if not samsung_df.empty and 'steps' in samsung_df.columns else 8000,
-            'heart_rate': samsung_df['heart_rate'].iloc[-1] if not samsung_df.empty and 'heart_rate' in samsung_df.columns else 70,
-            'sleep_duration': samsung_df['sleep_duration'].iloc[-1] if not samsung_df.empty and 'sleep_duration' in samsung_df.columns else 7,
-            'stress_level': samsung_df['stress_level'].iloc[-1] if not samsung_df.empty and 'stress_level' in samsung_df.columns else 30
+            'steps': np.mean(samsung_df['num_total_steps']), # if not samsung_df.empty and 'steps' in samsung_df.columns else 8000,
+            'heart_rate': np.mean(samsung_df['hr_mean']), # if not samsung_df.empty and 'heart_rate' in samsung_df.columns else 70,
+
+            'sleep_duration': np.mean(samsung_df['total_awake_hours'] ), # if not samsung_df.empty and 'sleep_duration' in samsung_df.columns else 7,
+            # 'stress_level': np.mean( samsung_df['stress_level'] ), # if not samsung_df.empty and 'stress_level' in samsung_df.columns else 30
+            'cal_burn_kcal' : np.mean(samsung_df['cal_burn_kcal']),
+  
         },
         'merged_df': merged_df
     }
+    
+    # # Create return dictionary with default values if needed
+    # return {
+    #     'oura_data': {
+    #         'sleep_score': oura_df['sleep_score'].iloc[-1] if not oura_df.empty and 'sleep_score' in oura_df.columns else 75,
+    #         'readiness_score': oura_df['readiness_score'].iloc[-1] if not oura_df.empty and 'readiness_score' in oura_df.columns else 80,
+    #         'activity_score': oura_df['activity_score'].iloc[-1] if not oura_df.empty and 'activity_score' in oura_df.columns else 70,
+    #         'deep_sleep': oura_df['deep_sleep'].iloc[-1] if not oura_df.empty and 'deep_sleep' in oura_df.columns else 2,
+    #         'rem_sleep': oura_df['rem_sleep'].iloc[-1] if not oura_df.empty and 'rem_sleep' in oura_df.columns else 1.5,
+    #         'hrv': oura_df['hrv'].iloc[-1] if not oura_df.empty and 'hrv' in oura_df.columns else 50
+    #     },
+    #     'samsung_data': {
+    #         'steps': samsung_df['steps'].iloc[-1] if not samsung_df.empty and 'steps' in samsung_df.columns else 8000,
+    #         'heart_rate': samsung_df['heart_rate'].iloc[-1] if not samsung_df.empty and 'heart_rate' in samsung_df.columns else 70,
+    #         'sleep_duration': samsung_df['sleep_duration'].iloc[-1] if not samsung_df.empty and 'sleep_duration' in samsung_df.columns else 7,
+    #         'stress_level': samsung_df['stress_level'].iloc[-1] if not samsung_df.empty and 'stress_level' in samsung_df.columns else 30
+    #     },
+    #     'merged_df': merged_df
+    # }
 
 
 
@@ -213,13 +374,13 @@ class HealthAgent:
                     "Limit daytime naps",
                     "Include physical activity in your daily routine"
                 ],
-                'stress': [
-                    "Regular exercise",
-                    "Relaxation techniques",
-                    "Maintain social connections",
-                    "Set realistic goals",
-                    "Practice stress management"
-                ]
+                # 'stress': [
+                #     "Regular exercise",
+                #     "Relaxation techniques",
+                #     "Maintain social connections",
+                #     "Set realistic goals",
+                #     "Practice stress management"
+                # ]
             },
             'Sleep Foundation': {
                 'sleep': [
@@ -303,7 +464,7 @@ class HealthAgent:
         self.suggested_questions = [
             "How can I improve my deep sleep?",
             "What's the ideal sleep schedule for my age?",
-            "How does stress affect my sleep quality?",
+            # "How does stress affect my sleep quality?",
             "What's the relationship between exercise and sleep?",
             "How can I establish a better bedtime routine?",
             "What foods should I avoid before bedtime?",
@@ -320,7 +481,7 @@ class HealthAgent:
         # Add recommendations based on keywords
         keywords = {
             'sleep': ['sleep', 'bed', 'rest', 'nap', 'insomnia'],
-            'stress': ['stress', 'anxiety', 'worried', 'tension'],
+            # 'stress': ['stress', 'anxiety', 'worried', 'tension'],
             'exercise': ['exercise', 'activity', 'workout', 'fitness'],
             'health': ['health', 'wellness', 'lifestyle', 'habits']
         }
@@ -416,12 +577,13 @@ class HealthAgent:
         """Analyze overall health status"""
         readiness_score = oura_data.get('readiness_score', 0)
         heart_rate = samsung_data.get('heart_rate', 0)
-        stress_level = samsung_data.get('stress_level', 0)
+        # stress_level = samsung_data.get('stress_level', 0)
+        
         
         return {
             'readiness': readiness_score,
             'heart_rate': heart_rate,
-            'stress_level': stress_level,
+            # 'stress_level': stress_level,
             'status': 'good' if readiness_score > 80 else 'moderate' if readiness_score > 60 else 'poor'
         }
 
@@ -442,14 +604,14 @@ class HealthAgent:
 
 
 # Update the create_streamlit_interface function to use HealthAgent
-def create_streamlit_interface():
+def create_streamlit_interface(sleep_quality_predictor):
     st.title("Sleep Quality Predictor")
     
     # Initialize HealthAgent
     health_agent = HealthAgent()
     
     # Load health data
-    health_data = get_health_data()
+    health_data = get_health_data(sleep_quality_predictor)
     
     # Create tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs([
@@ -488,19 +650,19 @@ def create_streamlit_interface():
                 step=0.1,
                 help="Total sleep duration")
             
-            stress = st.number_input("Stress Level", 
-                value=int(samsung_data['stress_level']),
-                min_value=0,
-                max_value=100, 
-                step=1,
-                help="Average stress level (0-100)")
+            # stress = st.number_input("Stress Level", 
+            #     value=int(samsung_data['stress_level']),
+            #     min_value=0,
+            #     max_value=100, 
+            #     step=1,
+            #     help="Average stress level (0-100)")
             
-            # Display current values
+            # # Display current values
             st.info("Current Samsung Health Metrics")
             st.metric("Daily Steps", f"{steps:,}")
             st.metric("Average Heart Rate", f"{heart_rate} bpm")
             st.metric("Sleep Duration", f"{sleep_duration:.1f} hours")
-            st.metric("Stress Level", f"{stress}/100")
+            # st.metric("Stress Level", f"{stress}/100")
         
         with col2:
             st.subheader("Oura Ring Data")
@@ -554,7 +716,7 @@ def create_streamlit_interface():
             predicted_score = (
                 sleep_score * 0.4 +
                 readiness * 0.3 +
-                (100 - stress) * 0.2 +
+                # (100 - stress) * 0.2 +
                 (activity_score * 0.1)
             )
             
@@ -581,7 +743,7 @@ def create_streamlit_interface():
             
             # Impact analysis
             impact_factors = {
-                "Stress Level": -stress * 0.5,
+                # "Stress Level": -stress * 0.5,
                 "Physical Activity": activity_score * 0.3,
                 "Previous Sleep": sleep_score * 0.4,
                 "Heart Rate": -abs(heart_rate - 70) * 0.2
@@ -708,6 +870,23 @@ def create_streamlit_interface():
                 st.markdown(response)
 
 if __name__ == "__main__":
+
+    # Load sleepQualityPredictor class
+    sleep_quality_predictor = SleepQualityPredictor() 
+    
+    # merged_df = get_health_data(sleep_quality_predictor)
+
+    # print('merged_df', merged_df.keys())
+    # print(merged_df.keys())
+    # print(merged_df['samsung_data'].keys())
+    # print(merged_df['samsung_data'].values())
+    # print(merged_df['oura_data'].keys())
+    # print(merged_df['oura_data'].values())
+
+    # print(merged_df['merged_df'] )
+    # print(merged_df['merged_df'] )
+
+
     st.sidebar.markdown("# Data Loading Debug")
     
     # Check basic path existence
@@ -725,4 +904,4 @@ if __name__ == "__main__":
         st.sidebar.write("Samsung directory contents:")
         st.sidebar.write([f for f in os.listdir(SAMSUNG_PATH) if f.endswith('.csv')])
     
-    create_streamlit_interface()
+    create_streamlit_interface(sleep_quality_predictor)

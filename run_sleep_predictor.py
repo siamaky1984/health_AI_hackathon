@@ -1,5 +1,5 @@
 import streamlit as st
-from sleep_predictor import build_sleep_predictor, NIMConnector, WebDataCollector
+from sleep_predictor import NIMConnector, WebDataCollector
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
