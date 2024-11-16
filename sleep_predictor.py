@@ -14,8 +14,13 @@ import json
 import argparse
 
 # import cudf
+from openai import OpenAI
+import openai
+
 
 from sleep_score_predict import SleepQualityPredictor
+
+openai_api_key_input = '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'
 
 # Load environment variables
 load_dotenv()
@@ -517,10 +522,61 @@ class HealthAgent:
             "Should I try meditation for better sleep?"
         ]
 
-    def get_chat_response(self, prompt):
+    def get_chat_response(self, prompt, health_params):
         """Generate response with recommendations from multiple sources"""
         response = "Here's what I found from multiple trusted sources:\n\n"
-        
+
+        ### SY
+        sleep_score, readiness, activity_score, hrv, steps, heart_rate, sleep_duration = health_params
+
+        prefix_prompt = """You are a professional health specialist. Based on the following health metrics, 
+            provide specific, actionable advice about the user's daily life and well-being.
+
+            User's Health Metrics:
+            - Sleep Score: {sleep}/100
+            - Readiness Score: {readiness}/100
+            - Activity Score: {activity}/100
+            - Heart Rate Variability (HRV): {hrv} ms
+            - Daily Steps: {steps}
+            - Average Heart Rate: {heart_rate} bpm
+            - Sleep Duration: {sleep_duration} hours
+
+            Please analyze these metrics and provide:
+            1. An overall assessment of the user's health status
+            2. Specific recommendations for improvement
+            3. Any areas of concern that should be addressed
+            4. Positive habits that should be maintained
+
+            Advice:""".format(
+                sleep=health_params['sleep_score'],
+                readiness=health_params['readiness'],
+                activity=health_params['activity_score'],
+                hrv=health_params['hrv'],
+                steps=health_params['steps'],
+                heart_rate=health_params['heart_rate'],
+                sleep_duration=health_params['sleep_duration']
+            )
+
+
+        ### openai chat completion
+        model ='gpt-4'
+        os.environ["OPENAI_API_KEY"] = openai_api_key_input
+        client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+       
+        # Creating a message as required by the API
+        messages = [{"role": "user", "content": prefix_prompt + prompt}]
+           # Calling the ChatCompletion API
+        response_openai = client.chat.completions.create(
+            model=model,
+            messages=messages,
+            temperature=0,
+        )
+
+        # Returning the extracted response
+        response+='\n'+ response_openai.choices[0].message.content
+        response += '\n'
+        print('response', response)
+
         # Add recommendations based on keywords
         keywords = {
             'sleep': ['sleep', 'bed', 'rest', 'nap', 'insomnia'],
@@ -528,6 +584,9 @@ class HealthAgent:
             'exercise': ['exercise', 'activity', 'workout', 'fitness'],
             'health': ['health', 'wellness', 'lifestyle', 'habits']
         }
+
+
+
         
         # Find matching categories based on prompt
         matching_categories = []
@@ -918,8 +977,19 @@ def create_streamlit_interface(sleep_quality_predictor):
             st.session_state.messages.append({"role": "user", "content": prompt})
             with st.chat_message("user"):
                 st.markdown(prompt)
+
+            health_list = [sleep_score, readiness, activity_score, hrv, steps, heart_rate, sleep_duration]
+            health_params = {
+            'sleep_score': sleep_score,
+            'readiness': readiness,
+            'activity_score': activity_score,
+            'hrv': hrv,
+            'steps': steps,
+            'heart_rate': heart_rate,
+            'sleep_duration': sleep_duration
+            }
             
-            response = health_agent.get_chat_response(prompt)
+            response = health_agent.get_chat_response(prompt, health_params)
             
             st.session_state.messages.append({"role": "assistant", "content": response})
             with st.chat_message("assistant"):
